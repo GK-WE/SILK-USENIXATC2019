@@ -4964,20 +4964,22 @@ void LongPeakTest(ThreadState* thread) {
             long cur_throughput = thread->shared->cur_ops_interval * 8 ; // 8 worker threads
             long cur_bandwidth_user_ops_MBPS = cur_throughput * FLAGS_value_size / 1000000;
 
-            // SILK TESTING the Pause compaction work functionality
-            if (!pausedcompaction && cur_bandwidth_user_ops_MBPS > 150){
-                //SILK Consider this a load peak
-                printf("->>>>??? Pausing compaction work from SILK\n");
-                db->PauseCompactionWork();
-                pausedcompaction = true;
-            } else if (pausedcompaction && cur_bandwidth_user_ops_MBPS <= 150) {
-                printf("->>>>??? Resuming compaction work from SILK\n");
-                db->ContinueCompactionWork();
-                pausedcompaction = false;
-            }
+            //            if (!pausedcompaction && cur_bandwidth_user_ops_MBPS > 150){
+                if (!pausedcompaction && cur_bandwidth_user_ops_MBPS > (int)(5162*(3/4))){
+                    //SILK Consider this a load peak
+                    printf("->>>>??? Pausing compaction work from SILK\n");
+                    db->PauseCompactionWork();
+                    pausedcompaction = true;
+                    //            } else if (pausedcompaction && cur_bandwidth_user_ops_MBPS <= 150) {
+                } else if (pausedcompaction && cur_bandwidth_user_ops_MBPS <= (int)(5162*(3/4))) {
+                    printf("->>>>??? Resuming compaction work from SILK\n");
+                    db->ContinueCompactionWork();
+                    pausedcompaction = false;
+                }
 
 
-            long cur_bandiwdth_compaction_MBPS = 200 - cur_bandwidth_user_ops_MBPS; //measured 200MB/s SSD bandwidth on XEON.
+                //  long cur_bandiwdth_compaction_MBPS = 200 - cur_bandwidth_user_ops_MBPS; //measured 200MB/s SSD bandwidth on XEON.
+                long cur_bandiwdth_compaction_MBPS = 5162 - cur_bandwidth_user_ops_MBPS; //samsung 980 pro, sequential write bandwidth is 5162 MB/s
             if (cur_bandiwdth_compaction_MBPS < 10) {
                 cur_bandiwdth_compaction_MBPS = 10;
             }
