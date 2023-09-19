@@ -4918,7 +4918,7 @@ void VerifyDBFromDB(std::string& truth_db_name) {
 
 
 // IMPORTANT: Need 15 threads for this to work: 
-// Thread 0 is the SILK thread -- adjust compaction bandwidth accordin to user workload. 
+// Thread 0 is the SILK thread -- adjust compaction bandwidth according to user workload.
 // Threads 1 -- 8 are the worker threads who take stuff from queues
 // Threads 9 -- 13 are the workload generator threads
 // Thread 14 is the one that controls throughput fluctuations
@@ -4984,7 +4984,7 @@ void LongPeakTest(ThreadState* thread) {
                 cur_bandiwdth_compaction_MBPS = 10;
             }
 
-            if (FLAGS_dynamic_compaction_rate && 
+            if (FLAGS_dynamic_compaction_rate && git
                 abs(prev_bandwidth_compaction_MBPS - cur_bandiwdth_compaction_MBPS) >= 10 ){
                 printf("Adjust-compaction-rate; current-client-bandwidth: %d ops/s; Bandwidth-taken: %d MB/s; Left-for-compaction: %d\n", 
                     cur_throughput, cur_bandwidth_user_ops_MBPS, cur_bandiwdth_compaction_MBPS);
@@ -5012,9 +5012,11 @@ void LongPeakTest(ThreadState* thread) {
             //std::this_thread::sleep_for(std::chrono::microseconds(200)); // equivalent to 5k request/s per load generating thread
             
             if(thread->shared->send_low_workload == 1){
-                usleep(700);
+                usleep(125); // equivalent to 8k request/s per load generating thread, 5 threads sum up to 40k ops/s
+//                usleep(700); //SILK
             } else{
-                usleep(70);
+                usleep(125); //
+//                usleep(70); //SILK
             }
         
         } else if (thread->tid == 14){
@@ -5061,7 +5063,8 @@ void LongPeakTest(ThreadState* thread) {
 
                 int op_prob = thread->rand.Next() % 100;
 
-                if (op_prob < 50) {
+                //100% writes
+                if (op_prob < 100) {
                     Status s = db->Put(write_options_, key, gen.Generate(pair_val_time.first));
                     if (!s.ok()) {
                         fprintf(stderr, "put error: %s\n", s.ToString().c_str());
