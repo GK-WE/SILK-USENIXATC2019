@@ -4984,7 +4984,7 @@ void LongPeakTest(ThreadState* thread) {
                 cur_bandiwdth_compaction_MBPS = 10;
             }
 
-            if (FLAGS_dynamic_compaction_rate && git
+            if (FLAGS_dynamic_compaction_rate &&
                 abs(prev_bandwidth_compaction_MBPS - cur_bandiwdth_compaction_MBPS) >= 10 ){
                 printf("Adjust-compaction-rate; current-client-bandwidth: %d ops/s; Bandwidth-taken: %d MB/s; Left-for-compaction: %d\n", 
                     cur_throughput, cur_bandwidth_user_ops_MBPS, cur_bandiwdth_compaction_MBPS);
